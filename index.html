@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#08090d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>NOTE VISUALIZER // VOCAL PITCH DSP</title>
+  <link rel="stylesheet" href="css/style.css?v=3.0">
+</head>
+<body class="app-body">
+
+  <header class="app-header">
+    <div class="header-left">
+      <div class="brand-block">
+        <span class="brand-title">NOTE VISUALIZER</span>
+      </div>
+    </div>
+
+    <div class="view-selector">
+      <button class="mode-tab active" data-view="cascada" type="button">
+        <span class="tab-label">CASCADA</span>
+      </button>
+      <button class="mode-tab" data-view="afinador" type="button">
+        <span class="tab-label">AFINADOR</span>
+      </button>
+      <button class="mode-tab" data-view="config" type="button">
+        <span class="tab-label">AJUSTES</span>
+      </button>
+    </div>
+
+    <div class="header-right">
+
+      <button id="btn-mic-toggle" class="btn-mic-hardware" type="button" aria-label="Activar o desactivar micrófono">
+        <span id="mic-status-badge" class="hardware-led"></span>
+        <span class="btn-text">ACTIVAR MIC</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <section id="view-cascada" class="view-screen active layout-bottom">
+      <div class="waterfall-stage" id="waterfall-stage-click">
+        <button id="btn-toggle-direction" class="waterfall-dir-btn" type="button" aria-label="Cambiar dirección del flujo de notas">
+          <span id="dir-icon">↑</span>
+          <span id="dir-label">DESDE EL PIANO</span>
+        </button>
+        <canvas id="waterfall-canvas"></canvas>
+      </div>
+
+      <div id="piano-container" class="piano-container piano-bottom"></div>
+    </section>
+
+    <section id="view-afinador" class="view-screen">
+      <div class="tuner-viewport">
+
+        <div class="gauge-stage">
+          <canvas id="tuner-canvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-config" class="view-screen">
+      <div class="settings-viewport">
+        <div class="settings-title-bar">
+          <span class="settings-title">// PARÁMETROS DEL SISTEMA DSP</span>
+        </div>
+
+        <div class="settings-panel">
+          <div class="panel-header">VISUALIZACIÓN Y TECLADO</div>
+
+          <div class="panel-row">
+            <span class="row-label">Tema</span>
+            <div class="hardware-segmented">
+              <input type="radio" id="setting-theme-dark" name="theme-mode" value="dark">
+              <label for="setting-theme-dark">Oscuro</label>
+              <input type="radio" id="setting-theme-light" name="theme-mode" value="light">
+              <label for="setting-theme-light">Claro</label>
+              <input type="radio" id="setting-theme-system" name="theme-mode" value="system" checked>
+              <label for="setting-theme-system">Sistema</label>
+            </div>
+          </div>
+
+          <div class="panel-row">
+            <span class="row-label">Mostrar octava</span>
+            <label class="switch-hardware">
+              <input type="checkbox" id="setting-show-octave" checked>
+              <span class="switch-lever"></span>
+            </label>
+          </div>
+
+          <div class="panel-row">
+            <span class="row-label">Nomenclatura</span>
+            <div class="hardware-segmented">
+              <input type="radio" id="setting-notation-latin" name="notation" value="latin" checked>
+              <label for="setting-notation-latin">Do, Re, Mi</label>
+              <input type="radio" id="setting-notation-anglo" name="notation" value="anglo">
+              <label for="setting-notation-anglo">C, D, E</label>
+            </div>
+          </div>
+
+          <div class="panel-row">
+            <span class="row-label">Rango vocal</span>
+            <select id="setting-piano-range" class="hardware-select">
+              <option value="vocalStandard">Vocal Estándar (C3 – B5)</option>
+              <option value="fullRange">Rango Completo (C2 – C6)</option>
+              <option value="soprano">Soprano (C4 – C6)</option>
+              <option value="alto">Mezzo / Contralto (G3 – F5)</option>
+              <option value="tenor">Tenor (C3 – A4)</option>
+              <option value="bass">Barítono / Bajo (E2 – E4)</option>
+            </select>
+          </div>
+
+          <div class="panel-row">
+            <span class="row-label">Orientación</span>
+            <select id="setting-piano-orientation" class="hardware-select">
+              <option value="bottom">En la base (Cascada vertical)</option>
+              <option value="left">Al lateral izquierdo (Piano Roll / DAW)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-panel">
+          <div class="panel-header">CASCADA</div>
+
+          <div class="panel-row">
+            <span class="row-label">Dirección</span>
+            <div class="hardware-segmented">
+              <input type="radio" id="setting-direction-out" name="signal-direction" value="keys-to-out" checked>
+              <label for="setting-direction-out" id="label-direction-out">Salir del piano (Abajo a Arriba)</label>
+              <input type="radio" id="setting-direction-in" name="signal-direction" value="out-to-keys">
+              <label for="setting-direction-in" id="label-direction-in">Hacia el piano (Arriba a Abajo)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-panel">
+          <div class="panel-header">AUDIO Y FILTROS</div>
+
+          <div class="panel-row">
+            <span class="row-label">Filtro vocal (70 - 1600 Hz)</span>
+            <label class="switch-hardware">
+              <input type="checkbox" id="setting-vocal-filter">
+              <span class="switch-lever"></span>
+            </label>
+          </div>
+
+          <div class="panel-row row-stacked">
+            <div class="stacked-top">
+              <span class="row-label">Puerta de ruido</span>
+              <span id="gate-val-display" class="gate-monitor">3 mV</span>
+            </div>
+
+            <div class="vu-module">
+              <input type="range" id="setting-noise-gate" class="hardware-slider" min="0.001" max="0.03" step="0.0005" value="0.003">
+              <div class="vu-bar">
+                <div id="gate-meter-fill" class="vu-active"></div>
+                <div id="gate-threshold-line" class="vu-threshold"></div>
+              </div>
+              <div class="vu-markers">
+                <span>SILENCIO</span>
+                <span>CORTE</span>
+                <span>VOZ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="js/app.js?v=3.0"></script>
+</body>
+</html>
+
